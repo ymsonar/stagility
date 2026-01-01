@@ -48,7 +48,7 @@ export default function Home() {
         </div>
         
         <p className="footer-note">
-          Built by HR leaders, for HR leaders. Launching Q2 2025.
+          Built by HR leaders, for HR leaders. Launching Q1 2026.
         </p>
       </main>
     )

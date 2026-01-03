@@ -1,5 +1,38 @@
+'use client'
+
+import { useState } from 'react'
+import { supabase } from './lib/supabase'
 export default function Home() {
-    return (
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [company, setCompany] = useState('')
+  const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setStatus('')
+
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([{ email, name, company }])
+
+      if (error) throw error
+
+      setStatus('success')
+      setEmail('')
+      setName('')
+      setCompany('')
+    } catch (error) {
+      setStatus('error')
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+      return (
       <main className="hero">
         <div className="logo">Stagility.ai</div>
         
@@ -16,16 +49,47 @@ export default function Home() {
           every people decision.
         </p>
         
-        <form className="email-form" action="https://formspree.io/f/your-form-id" method="POST">
-          <input 
-            type="email" 
-            name="email"
-            className="email-input" 
-            placeholder="Enter your work email" 
-            required 
-          />
-          <button type="submit" className="submit-btn">Join Waitlist</button>
-        </form>
+        <form className="email-form" onSubmit={handleSubmit}>
+                <input
+                  type="email"
+                  name="email"
+                  className="email-input"
+                  placeholder="Enter your work email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  name="name"
+                  className="email-input"
+                  placeholder="Your name (optional)"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <input
+                  type="text"
+                  name="company"
+                  className="email-input"
+                  placeholder="Company name (optional)"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+                <button type="submit" className="submit-btn" disabled={loading}>
+                  {loading ? 'Joining...' : 'Join Waitlist'}
+                </button>
+
+                {status === 'success' && (
+                  <p style={{color: '#10b981', marginTop: '1rem'}}>
+                    ✓ Thanks! You're on the waitlist.
+                  </p>
+                )}
+                {status === 'error' && (
+                  <p style={{color: '#ef4444', marginTop: '1rem'}}>
+                    ✗ Something went wrong. Please try again.
+                  </p>
+                )}
+              </form>
         
         <div className="features">
           <div className="feature">
